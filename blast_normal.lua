@@ -116,7 +116,7 @@ function BLAST_ENTITY.on_step(self, dtime)
 						collisiondetection = true,
 						vertical = false,
 						node = playerNode,
-						node_tile = 1,
+						node_tile = 3,
 					})
 				end
 			end
