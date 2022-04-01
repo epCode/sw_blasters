@@ -4,43 +4,6 @@ local function dir_to_pitch(dir)
 	return -math.atan2(-dir.y, xz)
 end
 
-local function get_top_node_tile(param2, paramtype2)
-	if paramtype2 == "colorwallmounted" then
-		paramtype2 = "wallmounted"
-		param2 = param2 % 8
-	elseif paramtype2 == "colorfacedir" then
-		paramtype2 = "facedir"
-		param2 = param2 % 32
-	end
-	if paramtype2 == "wallmounted" then
-		if param2 == 0 then
-			return 2
-		elseif param2 == 1 then
-			return 1
-		else
-			return 5
-		end
-	elseif paramtype2 == "facedir" then
-		if param2 >= 0 and param2 <= 3 then
-			return 1
-		elseif param2 == 4 or param2 == 10 or param2 == 13 or param2 == 19 then
-			return 6
-		elseif param2 == 5 or param2 == 11 or param2 == 14 or param2 == 16 then
-			return 3
-		elseif param2 == 6 or param2 == 8 or param2 == 15 or param2 == 17 then
-			return 5
-		elseif param2 == 7 or param2 == 9 or param2 == 12 or param2 == 18 then
-			return 4
-		elseif param2 >= 20 and param2 <= 23 then
-			return 2
-		else
-			return 1
-		end
-	else
-		return 1
-	end
-end
-
 local BLAST_ENTITY={
 	use_texture_alpha = true,
 	physical = true,
@@ -93,12 +56,12 @@ function BLAST_ENTITY.on_step(self, dtime)
 			minetest.sound_play("sw_blasters_small_hit_wall", {pos=pos, max_hear_distance=12, pitch = math.random(90,120)/100}, true)
 
 			if self._last_vel then
-				self._particle_block_pos = vector.add(vector.multiply(self._last_vel, 0.0001), pos)
+				self._particle_block_pos = vector.add(vector.multiply(self._last_vel, 0.001), pos)
 			else
 				self._particle_block_pos = pos
 			end
 
-			if minetest.get_node(self._particle_block_pos).name == "default:stone" then
+			if minetest.get_node(self._particle_block_pos).name == "default:stone" and self._last_vel then
 				if (math.abs(vel.x) < 0.0001) then
 					vel.x = self._last_vel.x*-1
 					self._bounces = self._bounces - 1
@@ -153,7 +116,7 @@ function BLAST_ENTITY.on_step(self, dtime)
 						collisiondetection = true,
 						vertical = false,
 						node = playerNode,
-						node_tile = get_top_node_tile(playerNode.param2, def.paramtype2),
+						node_tile = 1,
 					})
 				end
 			end
